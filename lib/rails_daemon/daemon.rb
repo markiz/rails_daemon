@@ -24,7 +24,14 @@ module RailsDaemon
               block.call(self)
             end
           rescue StandardError => e
-            logger.error("#{e.class.name}: #{e.to_s}\n\n#{e.backtrace.join("\n")}")
+            if $daemon_stopped
+              logger.info("Exception raised after daemon stopped.")
+              logger.info("#{e.class.name}: #{e.to_s}")
+              logger.info("Ignoring it.")
+              exit!
+            else
+              logger.error("#{e.class.name}: #{e.to_s}\n\n#{e.backtrace.join("\n")}")
+            end
           end
           logger.error "Something happened, restarting daemon..."
           sleep(options[:restart_cooldown])
@@ -63,8 +70,7 @@ module RailsDaemon
       {
         :daemon           => default_daemon_options,
         :restart_cooldown => 30,
-        :log_file         => "#{root}/log/daemon.log",
-        :hard_exit        => true
+        :log_file         => "#{root}/log/daemon.log"
       }
     end
 
@@ -77,7 +83,9 @@ module RailsDaemon
         :backtrace  => true,
         :monitor    => false,
         :log_output => true,
-        :log_dir    => "#{root}/log"
+        :log_dir    => "#{root}/log",
+        :hard_exit  => true,
+        :stop_proc  => proc { $daemon_stopped = true }
       }
     end
   end
