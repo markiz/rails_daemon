@@ -63,7 +63,8 @@ module RailsDaemon
       {
         :daemon           => default_daemon_options,
         :restart_cooldown => 30,
-        :log_file         => "#{root}/log/daemon.log"
+        :log_file         => "#{root}/log/daemon.log",
+        :hard_exit        => true
       }
     end
 
