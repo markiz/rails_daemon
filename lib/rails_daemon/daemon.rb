@@ -61,6 +61,7 @@ module RailsDaemon
       log_file = File.open(options[:log_file], 'a')
       log_file.sync = true
       Rails.logger = Logger.new(log_file)
+      Rails.logger.level = Logger::INFO
       Rails.logger.formatter = lambda do |severity, timestamp, progname, msg|
         "[#{timestamp.strftime("%Y-%m-%d %H:%M")}] #{msg}\n"
       end
